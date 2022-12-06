@@ -4,6 +4,6 @@ import TheWelcome from '../components/TheWelcome.vue'
 
 <template>
   <main>
-    <TheWelcome />
+    <RouterLink class="route" to="/history">历史</RouterLink>
   </main>
 </template>
