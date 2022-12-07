@@ -4,7 +4,7 @@ import History from '../views/History.vue'
 import Pagination from '@/views/Pagination.vue'
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHistory('/dolphins-web/'),
   routes: [
     {
       path: '/',

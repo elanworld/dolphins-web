@@ -1,5 +1,6 @@
-<script>
+<script lang="ts">
 import axios from "axios";
+import { ElMessage } from "element-plus";
 
 const service = axios.create()
 // 请求拦截器
@@ -22,8 +23,9 @@ service.interceptors.response.use(res => {
     }
   }
   if (res.status === 203) {
-    window.location.replace("/")
-    window.location.reload()
+    // window.location.replace("/")
+    // window.location.reload()
+    ElMessage('请登录再访问！')
   }
   return res
 }, err => {

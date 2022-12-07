@@ -8,7 +8,7 @@
     <a @click='changePage(true)' href="javascript:;" :class='{disabled: currentPage===pages}'>下一页</a>
   </div>
 </template>
-<script>
+<script lang="ts">
 import {computed, ref} from 'vue'
 
 export default {
