@@ -2,7 +2,7 @@
 class Api {
   constructor() {
   }
-  preLink = process.env.NODE_ENV === "development" ? "http://localhost:8080/launcher-box":"https://www.xianneng.top/api/launcher-box"
+  preLink = process.env.NODE_ENV === "development" ? "http://localhost:8070/launcher-box":"https://www.xianneng.top/api/launcher-box"
   historyPage = this.preLink + "/chromeHistory/page"
 }
 

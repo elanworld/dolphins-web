@@ -6,6 +6,8 @@ import api from "@/service/Api.vue";
 import Pagination from "@/views/Pagination.vue"
 import {Search} from '@element-plus/icons-vue'
 
+
+
 interface Data {
   list: {
     visitTime: number
@@ -24,7 +26,6 @@ const data: Data = reactive({
 })
 
 const changePage = (n: number) => {
-  service
   service.post(api.historyPage, {
     likeTitle: data.title === '' ? undefined : data.title,
     minVisitTime: data.minDate ? (data.minDate.valueOf() / 1000 + 11644473600) * 1000000 : undefined,
@@ -47,8 +48,8 @@ changePage(1)
 <template>
   <div class="container">
     <el-container>
-      <el-header>
-        <el-input v-model="data.title" placeholder="标题" class="el-input-c"></el-input>
+      <el-header class="el-header">
+        <el-input v-model="data.title" placeholder="标题" class="el-input-c" @keyup.enter="changePage(1)"></el-input>
         <el-date-picker
             v-model="data.minDate"
             type="date"
@@ -61,22 +62,64 @@ changePage(1)
         />
         <el-button @click="() => changePage(1)" :icon="Search" class="el-sub-menu"/>
       </el-header>
-      <el-main>
-        <el-table ref="multipleTable" :data="data.list" :stripe=true :border=true style="width: 100%">
+      <el-main class="el-main">
+        <el-table class="el-table" ref="multipleTable" :data="data.list" :stripe=true :border=true style="width: 100%">
           <el-table-column prop="title" label="标题"></el-table-column>
           <el-table-column prop="webUrl" label="地址"></el-table-column>
           <el-table-column prop="visitTimeStr" label="日期"></el-table-column>
         </el-table>
-        <Pagination @change-page='e => changePage(e)' :pagesize='data.pageSize' :total='data.total'
-                    :page='data.current'/>
+        <el-pagination layout="prev, pager, next" :total="data.total" @current-change="(e) => changePage(e)"/>
       </el-main>
     </el-container>
   </div>
 </template>
 
 <style>
-.el-input-c {
-  width: auto;
+.container {
+  margin: 0 auto;
+  max-width: 1200px;
+  padding: 20px;
 }
+
+.el-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.el-input-c {
+  flex: 1;
+  margin-right: 10px;
+}
+
+.el-sub-menu {
+  margin-left: 10px;
+}
+
+
+.el-main {
+  margin-top: 20px;
+}
+
+.el-table {
+  width: 100%;
+}
+
+.el-table__header th {
+  font-weight: bold;
+}
+
+.el-table__body td {
+  text-align: center;
+}
+
+.el-sub-menu {
+  margin-left: 20px;
+}
+
+.el-pagination {
+  margin-top: 20px;
+}
+
 
 </style>
