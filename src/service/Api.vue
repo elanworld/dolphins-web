@@ -2,7 +2,9 @@
 class Api {
   constructor() {
   }
-  preLink = process.env.NODE_ENV === "development" ? "http://localhost:8070/launcher-box":"https://www.xianneng.top/api/launcher-box"
+
+  mockPro = true
+  preLink = process.env.NODE_ENV !== "development" || this.mockPro ? "https://www.xianneng.top/api/launcher-box" : "http://localhost:8070/launcher-box"
   historyPage = this.preLink + "/chromeHistory/page"
 }
 

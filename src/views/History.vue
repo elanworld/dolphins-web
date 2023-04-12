@@ -1,10 +1,11 @@
 <script setup lang="ts">
 
-import {reactive} from "vue";
+import { reactive, onMounted} from "vue";
 import service from "@/service/Service.vue";
 import api from "@/service/Api.vue";
-import Pagination from "@/views/Pagination.vue"
 import {Search} from '@element-plus/icons-vue'
+import {useRoute} from 'vue-router'
+
 
 
 
@@ -41,7 +42,14 @@ const changePage = (n: number) => {
     })
   })
 }
-changePage(1)
+
+onMounted(() => {
+  const route = useRoute()
+  if (route.query?.auth) {
+    localStorage.setItem("Authorization",route.query?.auth.toString())
+  }
+  changePage(1)
+})
 
 </script>
 
