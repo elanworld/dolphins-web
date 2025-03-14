@@ -26,6 +26,7 @@ service.interceptors.response.use(res => {
     // window.location.replace("/")
     // window.location.reload()
     ElMessage('请登录再访问！')
+    return Promise.reject('请登录再访问！')
   }
   return res
 }, err => {
