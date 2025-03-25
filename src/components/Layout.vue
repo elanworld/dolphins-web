@@ -18,6 +18,10 @@
           <el-icon><icon-menu /></el-icon>
           <template #title>chrom历史</template>
         </el-menu-item>
+        <el-menu-item index="/show">
+          <el-icon><icon-menu /></el-icon>
+          <template #title>数据展示</template>
+        </el-menu-item>
         <el-menu-item>
           <el-icon>
             <setting />

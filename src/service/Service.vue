@@ -5,7 +5,8 @@ import { ElMessage } from "element-plus";
 const service = axios.create()
 // 请求拦截器
 service.interceptors.request.use(config => {
-  config.params.credentials = 'include'
+  if (config.params)
+    config.params.credentials = 'include'
   let storageSync = window.localStorage.getItem("Authorization");
   if (storageSync) {
     config.headers.Authorization = storageSync

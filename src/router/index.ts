@@ -3,6 +3,7 @@ import HomeView from '../views/HomeView.vue'
 import History from '../views/History.vue'
 import Pagination from '@/views/Pagination.vue'
 import Layout from '../components/Layout.vue'
+import Windowstage from '../views/Windowstage.vue'
 
 const router = createRouter({
   history: createWebHistory('/dolphins-web/'),
@@ -34,6 +35,11 @@ const router = createRouter({
           path: '/page',
           name: 'page',
           component: Pagination
+        },
+        {
+          path: '/show',
+          name: 'show',
+          component: Windowstage
         },
       ]
     },
