@@ -6,8 +6,14 @@
             <el-table :data="tableData" style="width: 100%">
                 <el-table-column prop="category" label="分类" width="120" />
                 <el-table-column prop="taskName" label="名称" width="150" />
-                <el-table-column prop="result" label="提示" />
-                <el-table-column prop="cron" label="时间" width="100" />
+                <el-table-column prop="result[0].tip" label="提示" />
+                <el-table-column label="时间" width="100">
+                    <template #default="{ row }">
+                        <span :style="{ color: row.result[0].color }">
+                            {{ row.result[0].time }}{{ row.result[0].unit }}
+                        </span>
+                    </template>
+                </el-table-column>
             </el-table>
         </el-card>
     </div>
@@ -29,14 +35,14 @@ const fetchData = async () => {
     loading.value = true;
     try {
 
-        service.post(api.scheduleTask, { category: "tip" })
+        service.post(api.scheduleTask, { category: "show" })
             .then(async (value) => {
                 if (!value?.data) return;
 
                 const enhancedData = await Promise.all(
                     value.data?.data.map(async (item) => {
                         // 这里可以调用二次接口，比如获取颜色
-                        const colorRes = await service.get(api.schedule, { params: { id: item.id } })
+                        const colorRes = await service.get(api.schedule, { params: { id: item.id, run: false } })
                         return { ...item, result: colorRes.data };
                     })
                 );
