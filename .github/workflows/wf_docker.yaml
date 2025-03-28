@@ -1,0 +1,35 @@
+name: Docker Image CI of Dolphins Web
+
+on:
+  push:
+  pull_request:
+    branches: [ master ]
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js 16
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - name: Build projects
+        run: |
+          npm install
+          npm run build-only
+          ls
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+      - name: Build docker image and push
+        id: docker_build
+        uses: docker/build-push-action@v2
+        with:
+          context: ./
+          push: true
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/dolphins-web
