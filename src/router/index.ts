@@ -48,9 +48,14 @@ const router = createRouter({
 router.afterEach((to,from,next) => {
   //遍历meta改变title
   if (to.meta.title) {
-    document.title = to.meta.title;
+    document.title = String(to.meta.title);
   }
   window.scrollTo(0,0);
+  if (to.query?.auth) {
+    localStorage.setItem("Authorization",to.query?.auth.toString())
+  }
 });
+
+
 
 export default router

@@ -54,7 +54,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="container">
+  <div class="containerHis">
     <el-container>
       <el-header class="el-header">
         <el-input v-model="data.title" placeholder="标题" class="el-input-c" @keyup.enter="changePage(1)"></el-input>
@@ -83,7 +83,7 @@ onMounted(() => {
 </template>
 
 <style>
-.container {
+.containerHis {
   margin: 0 auto;
   max-width: 1200px;
   padding: 20px;

@@ -28,5 +28,6 @@ coverage
 *.sw?
 
 
-node_modules_win/
+node_modules/
+node_modules/
 node_modules_linux/
