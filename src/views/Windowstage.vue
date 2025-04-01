@@ -22,12 +22,17 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { ElMessage } from "element-plus";
-import service from "@/service/Service.vue";
+import { service } from "@/service/Service";
 import api from "@/service/Api.vue";
 
+interface TableItem {
+    id: number;
+    name: string;
+    time: string;
+    result?: any; // 颜色数据
+}
 
-
-const tableData = ref([]);
+const tableData = ref<TableItem[]>([]);
 const loading = ref(false);
 
 // 获取主列表数据
@@ -40,7 +45,7 @@ const fetchData = async () => {
                 if (!value?.data) return;
 
                 const enhancedData = await Promise.all(
-                    value.data?.data.map(async (item) => {
+                    value.data?.data.map(async (item: TableItem) => {
                         // 这里可以调用二次接口，比如获取颜色
                         const colorRes = await service.get(api.schedule, { params: { id: item.id, run: false } })
                         return { ...item, result: colorRes.data };
@@ -52,14 +57,15 @@ const fetchData = async () => {
                 console.error("请求失败:", error);
             })
     } catch (error) {
-        ElMessage.error("数据加载失败", error);
+        console.error("数据加载失败:", error);
+        ElMessage.error("数据加载失败");
     } finally {
         loading.value = false;
     }
 };
 
 // 颜色映射到 Element UI 标签
-const getTagType = (color) => {
+const getTagType = (color: string) => {
     switch (color) {
         case "red":
             return "danger";

@@ -11,16 +11,26 @@
         @close="handleClose" :router="true">
         <el-menu-item index="/">
           <el-icon>
-            <location />
+            <HomeFilled />
           </el-icon>
           <template #title>home</template>
         </el-menu-item>
+        <el-menu-item index="/login">
+          <el-icon>
+            <CaretLeft />
+          </el-icon>
+          <template #title>登录</template>
+        </el-menu-item>
         <el-menu-item index="/history">
-          <el-icon><Document /></el-icon>
+          <el-icon>
+            <Document />
+          </el-icon>
           <template #title>chrom历史</template>
         </el-menu-item>
         <el-menu-item index="/show">
-          <el-icon><DataAnalysis /></el-icon>
+          <el-icon>
+            <DataAnalysis />
+          </el-icon>
           <template #title>数据展示</template>
         </el-menu-item>
         <el-menu-item>
@@ -36,15 +46,15 @@
       <router-view></router-view>
     </div>
   </div>
+  <!-- <Background /> -->
 </template>
 
 <script lang="ts" setup>
 import { ref } from 'vue'
 import {
-  Document,
-  Location,
-  Setting,DataAnalysis
+  Document, Setting, DataAnalysis, HomeFilled, CaretLeft
 } from '@element-plus/icons-vue'
+import Background from './Background.vue';
 
 const isCollapse = ref(true)
 const handleOpen = (key: string, keyPath: string[]) => {
@@ -56,7 +66,6 @@ const handleClose = (key: string, keyPath: string[]) => {
 </script>
 
 <style>
-
 .layoutTop {
   display: flex;
 }
@@ -65,29 +74,33 @@ const handleClose = (key: string, keyPath: string[]) => {
   flex: 1;
   justify-content: flex-start;
   max-width: 10%;
-  padding: 3%;
-  margin: 1%;
+  padding: 0;
+  margin: 0;
   z-index: 999;
 }
 
 .contentPage {
   flex: 10;
-  padding: 2%;
-  max-width: 80%;
+  padding: 1%;
+  max-width: 88%;
 }
+
 .el-menu-vertical-demo {
   background-color: #42b983;
 }
+
 .systemTitle {
+  margin: 1%;
   margin-bottom: 30%;
 }
+
 .systemTitle:hover {
   color: #42b983;
 }
+
 .el-menu {
   width: 200px;
   min-height: 100vh;
   border-right: 1px solid #e6e6e6;
 }
-
 </style>

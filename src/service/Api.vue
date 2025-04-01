@@ -9,6 +9,9 @@ class Api {
   historyPage = this.preLink + "/chromeHistory/page"
   scheduleTask = this.preLink + "/scheduleTask/list"
   schedule = this.preLink + "/com/manual/schedule"
+  plot = this.preLink + '/chromeHistory/plot'
+  login = this.preLink + '/system/login'
+  register =  this.preLink + '/system/authUser'
 }
 
 const api = new Api()
