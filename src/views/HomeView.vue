@@ -54,12 +54,14 @@ const toggleHiddenContent = () => {
 
 <style scoped>
 .container {
-  display: block;
+  display: flex;
+  flex-direction: column;
   max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
+  margin: 10%;
+  padding: 5%;
   text-align: center;
   font-family: Arial, sans-serif;
+  gap: 5px;
 }
 
 .route {

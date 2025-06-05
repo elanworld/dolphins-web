@@ -1,6 +1,7 @@
 <template>
-  <div class="layout">
-    <div class="container">
+  <div class="layoutTop">
+    <div class="containerLayout">
+      <div class="systemTitle">工具集合</div>
       <el-radio-group v-model="isCollapse" style="margin-bottom: 20px">
         <el-radio-button :value="false">展开</el-radio-button>
         <el-radio-button :value="true">折叠</el-radio-button>
@@ -10,16 +11,26 @@
         @close="handleClose" :router="true">
         <el-menu-item index="/">
           <el-icon>
-            <location />
+            <HomeFilled />
           </el-icon>
           <template #title>home</template>
         </el-menu-item>
+        <el-menu-item index="/login">
+          <el-icon>
+            <CaretLeft />
+          </el-icon>
+          <template #title>登录</template>
+        </el-menu-item>
         <el-menu-item index="/history">
-          <el-icon><icon-menu /></el-icon>
+          <el-icon>
+            <Document />
+          </el-icon>
           <template #title>chrom历史</template>
         </el-menu-item>
         <el-menu-item index="/show">
-          <el-icon><icon-menu /></el-icon>
+          <el-icon>
+            <DataAnalysis />
+          </el-icon>
           <template #title>数据展示</template>
         </el-menu-item>
         <el-menu-item>
@@ -31,20 +42,19 @@
       </el-menu>
     </div>
     <!-- 页面内容 -->
-    <div class="content">
+    <div class="contentPage">
       <router-view></router-view>
     </div>
   </div>
+  <!-- <Background /> -->
 </template>
 
 <script lang="ts" setup>
 import { ref } from 'vue'
 import {
-  Document,
-  Menu as IconMenu,
-  Location,
-  Setting,
+  Document, Setting, DataAnalysis, HomeFilled, CaretLeft
 } from '@element-plus/icons-vue'
+import Background from './Background.vue';
 
 const isCollapse = ref(true)
 const handleOpen = (key: string, keyPath: string[]) => {
@@ -56,25 +66,41 @@ const handleClose = (key: string, keyPath: string[]) => {
 </script>
 
 <style>
-.layout {
+.layoutTop {
   display: flex;
 }
 
-.container {
+.containerLayout {
+  flex: 1;
   justify-content: flex-start;
-  /* 左对齐 */
-  align-items: center;
-  /* 垂直居中 */
+  max-width: 10%;
+  padding: 0;
+  margin: 0;
+  z-index: 999;
+}
+
+.contentPage {
+  flex: 10;
+  padding: 1%;
+  max-width: 88%;
+}
+
+.el-menu-vertical-demo {
+  background-color: #42b983;
+}
+
+.systemTitle {
+  margin: 1%;
+  margin-bottom: 30%;
+}
+
+.systemTitle:hover {
+  color: #42b983;
 }
 
 .el-menu {
   width: 200px;
   min-height: 100vh;
   border-right: 1px solid #e6e6e6;
-}
-
-.content {
-  flex: 1;
-  padding: 20px;
 }
 </style>

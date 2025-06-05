@@ -1,12 +1,10 @@
 <script setup lang="ts">
 
 import { reactive, onMounted} from "vue";
-import service from "@/service/Service.vue";
+import {service, setStorage, getStorage} from "@/service/Service";
 import api from "@/service/Api.vue";
 import {Search} from '@element-plus/icons-vue'
 import {useRoute} from 'vue-router'
-
-
 
 
 interface Data {
@@ -25,6 +23,7 @@ interface Data {
 const data: Data = reactive({
   list: []
 })
+
 
 const changePage = (n: number) => {
   service.post(api.historyPage, {
@@ -54,7 +53,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="container">
+  <div class="containerHis">
     <el-container>
       <el-header class="el-header">
         <el-input v-model="data.title" placeholder="标题" class="el-input-c" @keyup.enter="changePage(1)"></el-input>
@@ -71,19 +70,19 @@ onMounted(() => {
         <el-button @click="() => changePage(1)" :icon="Search" class="el-sub-menu"/>
       </el-header>
       <el-main class="el-main">
-        <el-table class="el-table" ref="multipleTable" :data="data.list" :stripe=true :border=true style="width: 100%">
+        <el-table class="el-table" ref="multipleTable" :data="data.list" :stripe=true :border=true :scroll-x="true" style="width: 100%">
           <el-table-column prop="title" label="标题"></el-table-column>
-          <el-table-column prop="webUrl" label="地址"></el-table-column>
+          <el-table-column border:fit prop="webUrl" label="地址"></el-table-column>
           <el-table-column prop="visitTimeStr" label="日期"></el-table-column>
         </el-table>
-        <el-pagination layout="prev, pager, next" :total="data.total" @current-change="(e) => changePage(e)"/>
+        <el-pagination layout="prev, pager, next" :total="data.total" @current-change="(e:number) => changePage(e)"/>
       </el-main>
     </el-container>
   </div>
 </template>
 
 <style>
-.container {
+.containerHis {
   margin: 0 auto;
   max-width: 1200px;
   padding: 20px;
@@ -119,6 +118,10 @@ onMounted(() => {
 
 .el-table__body td {
   text-align: center;
+}
+.el-table-column {
+  
+  white-space: nowrap;
 }
 
 .el-sub-menu {
