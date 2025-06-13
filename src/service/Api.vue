@@ -4,7 +4,7 @@ class Api {
   }
   
 
-  mockPro = true
+  mockPro = false
   preLink = process.env.NODE_ENV !== "development" || this.mockPro ? "https://www.xianneng.top/api/launcher-box" : "http://localhost:8030"
   historyPage = this.preLink + "/chromeHistoryExt/page"
   scheduleTask = this.preLink + "/scheduleTaskExt/list"
@@ -12,6 +12,10 @@ class Api {
   plot = this.preLink + '/chromeHistory/plot'
   login = this.preLink + '/system/login'
   register =  this.preLink + '/system/authUser'
+  filesRecordUser = this.preLink + '/com/file/current'
+  filesRecord=  this.preLink + '/filesRecord'
+  fileUpload=  this.preLink + '/filesBucket/upload/open'
+  fileDown= this.preLink + '/filesBucket/download/open'
 }
 
 const api = new Api()

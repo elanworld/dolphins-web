@@ -15,12 +15,6 @@
           </el-icon>
           <template #title>home</template>
         </el-menu-item>
-        <el-menu-item index="/login">
-          <el-icon>
-            <CaretLeft />
-          </el-icon>
-          <template #title>登录</template>
-        </el-menu-item>
         <el-menu-item index="/history">
           <el-icon>
             <Document />
@@ -33,7 +27,7 @@
           </el-icon>
           <template #title>数据展示</template>
         </el-menu-item>
-        <el-menu-item>
+        <el-menu-item index="/login">
           <el-icon>
             <setting />
           </el-icon>
