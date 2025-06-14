@@ -1,5 +1,5 @@
 <template>
-    <div style="max-width: 600px; margin: auto; padding: 20px;">
+    <div style="margin: auto; padding: 20px;">
         <!-- <h2>📁 Element Plus 文件管理器示例</h2> -->
 
         <el-upload ref="uploadRef" multiple :file-list="fileList" :on-remove="handleRemove" :on-preview="handlePreview"
@@ -15,11 +15,6 @@
         <!-- 自定义文件列表 -->
         <el-table :data="fileResList" style="margin-top: 20px;" border size="small">
             <el-table-column prop="name" label="文件名"></el-table-column>
-            <el-table-column label="大小" width="100">
-                <template #default="{ row }">
-                    {{ (row.size / 1024).toFixed(1) }} KB
-                </template>
-            </el-table-column>
             <el-table-column label="操作" width="150">
                 <template #default="{ row }">
                     <el-button type="text" size="small" @click="downloadFile(row)">⬇ 下载</el-button>
@@ -27,7 +22,7 @@
                 </template>
             </el-table-column>
         </el-table>
-        <el-pagination style="margin-top: 10px; text-align: right;" background layout="prev, pager, next"
+        <el-pagination v-if="fileResList.values.length > 0" style="margin-top: 10px; text-align: right;" background layout="prev, pager, next"
             :total="fileResList.length" :page-size="pageSize" v-model:current-page="currentPage"
             @current-change="getFileList" />
         <el-dialog :visible.sync="previewVisible" width="50%" :before-close="closePreview">
@@ -208,16 +203,11 @@ function closePreview() {
 
 
 function downloadFile(row) {
-    if (!row.url) {
-        ElMessage.warning('该文件暂无下载链接')
-        return
-    }
-    const link = document.createElement('a')
-    link.href = row.url
-    link.download = row.name
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
+  if (!row.url) {
+    ElMessage.warning('该文件暂无链接');
+    return;
+  }
+  window.open(row.url, '_blank');
 }
 
 function removeFile(row) {
