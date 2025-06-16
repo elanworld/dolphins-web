@@ -15,6 +15,7 @@
         <!-- 自定义文件列表 -->
         <el-table :data="fileResList" style="margin-top: 20px;" border size="small">
             <el-table-column prop="name" label="文件名"></el-table-column>
+            <el-table-column prop="date" label="日期"></el-table-column>
             <el-table-column label="操作" width="150">
                 <template #default="{ row }">
                     <el-button type="text" size="small" @click="downloadFile(row)">⬇ 下载</el-button>
@@ -22,7 +23,7 @@
                 </template>
             </el-table-column>
         </el-table>
-        <el-pagination v-if="fileResList.values.length > 0" style="margin-top: 10px; text-align: right;" background layout="prev, pager, next"
+        <el-pagination v-if="fileResList.length > 0" style="margin-top: 10px; text-align: right;" background layout="prev, pager, next"
             :total="fileResList.length" :page-size="pageSize" v-model:current-page="currentPage"
             @current-change="getFileList" />
         <el-dialog :visible.sync="previewVisible" width="50%" :before-close="closePreview">
@@ -51,13 +52,14 @@ function getFileList() {
         service.get(api.filesRecordUser, {
             params: {
                 page: 20, // 分页参数
-                page: currentPage.value,
+                page: currentPage.value -1,
             }
         },
         ).then(res => {
             fileResList.value = res.data?.data?.records.map(file => ({
                 name: file.fileName,
                 url: file.fileUrl ? file.fileUrl : `${api.fileDown}/${file?.fileName}${file?.password ? "?password=" + file?.password : ""}`,
+                date: file.modifyTime,
                 origin: file,
             }))
             pageSize.value = fileResList.length
