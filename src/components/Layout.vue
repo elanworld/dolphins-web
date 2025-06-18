@@ -1,19 +1,25 @@
 <template>
   <div class="layoutTop">
     <div class="containerLayout">
-      <div class="systemTitle">工具集合</div>
-      <el-radio-group v-model="isCollapse" style="margin-bottom: 20px">
-        <el-radio-button :value="false">展开</el-radio-button>
-        <el-radio-button :value="true">折叠</el-radio-button>
+      <div class="systemTitle">🛠️工具集合🔧</div>
+      <el-radio-group v-model="isCollapse" class="radio-toggle">
+        <el-radio-button :value="false" class="text-xs flex items-center">
+          <i class="el-icon-bottom" style="margin-right: 4px;"></i>
+          {{ isCollapse ? '+' : '展开' }}
+        </el-radio-button>
+        <el-radio-button :value="true" class="text-xs flex items-center">
+          <i class="el-icon-top" style="margin-right: 4px;"></i>
+          {{ isCollapse ? '-' : '折叠' }}
+        </el-radio-button>
       </el-radio-group>
       <!-- 菜单 -->
       <el-menu default-active="" class="el-menu-vertical-demo" :collapse="isCollapse" @open="handleOpen"
         @close="handleClose" :router="true">
         <el-menu-item index="/">
           <el-icon>
-            <HomeFilled />
+            <Files />
           </el-icon>
-          <template #title>home</template>
+          <template #title>文件管理</template>
         </el-menu-item>
         <el-menu-item index="/history">
           <el-icon>
@@ -46,7 +52,7 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import {
-  Document, Setting, DataAnalysis, HomeFilled, CaretLeft
+  Document, Setting, DataAnalysis, HomeFilled, Files
 } from '@element-plus/icons-vue'
 import Background from './Background.vue';
 
