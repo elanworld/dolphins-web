@@ -33,7 +33,6 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import { ElMessage } from 'element-plus'
-import api from "@/service/Api.vue";
 import AppUsageChart from '@/components/AppUsageChart.vue';
 import AppDevicePieChart from '@/components/AppDevicePieChart.vue'
 import Api from '../service/Api.vue'
@@ -105,7 +104,8 @@ async function fetchData() {
 }
 
 onMounted(() => {
-    // fetchAppUsageStats()
+    const [startDate, endDate] = dateRange.value || []
+    fetchAppUsageStats(startDate, endDate)
 })
 </script>
 

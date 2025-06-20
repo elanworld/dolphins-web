@@ -39,6 +39,12 @@ service.interceptors.response.use(res => {
       router.push('/');
     return Promise.reject('请登录再访问！')
   }
+  if (res.status === 403) {
+    // window.location.replace("/")
+    // window.location.reload()
+    ElMessage('您没有权限访问！')
+    return Promise.reject('您没有权限访问！')
+  }
   return res
 }, err => {
   return Promise.reject(err)  //返回错误
