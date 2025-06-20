@@ -4,6 +4,7 @@ import History from '../views/History.vue'
 import Pagination from '@/views/Pagination.vue'
 import Layout from '../components/Layout.vue'
 import Windowstage from '../views/Windowstage.vue'
+import UsageStatistic from '../views/UsageStatistic.vue'
 import Login from '../views/Login.vue'
 
 const router = createRouter({
@@ -41,6 +42,11 @@ const router = createRouter({
           path: '/show',
           name: 'show',
           component: Windowstage
+        },
+        {
+          path: '/statistic',
+          name: 'statistic',
+          component: UsageStatistic
         },
         {
           path: '/login',

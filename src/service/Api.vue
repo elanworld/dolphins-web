@@ -15,7 +15,7 @@ class Api {
   filesRecordUser = this.preLink + '/com/file/current'
   filesRecord=  this.preLink + '/filesRecord'
   fileUpload=  this.preLink + '/filesBucket/upload/open'
-  fileDown= this.preLink + '/filesBucket/download/open'
+  appRecord= this.preLink + '/appRecordExt/query'
 }
 
 const api = new Api()

@@ -146,7 +146,6 @@ async function uploadFile(formData, file, redirect) {
 
 // 模拟上传接口
 async function dummyRequest({ file, onSuccess }) {
-    console.log('模拟上传:', file.name)
     setTimeout(() => {
         onSuccess('ok')
     }, 1000)

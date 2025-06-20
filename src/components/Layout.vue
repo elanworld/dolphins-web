@@ -1,62 +1,78 @@
 <template>
-  <div class="layoutTop">
-    <div class="containerLayout">
-      <div class="systemTitle">🛠️工具集合🔧</div>
-      <el-radio-group v-model="isCollapse" class="radio-toggle">
-        <el-radio-button :value="false" class="text-xs flex items-center">
-          <i class="el-icon-bottom" style="margin-right: 4px;"></i>
-          {{ isCollapse ? '+' : '展开' }}
-        </el-radio-button>
-        <el-radio-button :value="true" class="text-xs flex items-center">
-          <i class="el-icon-top" style="margin-right: 4px;"></i>
-          {{ isCollapse ? '-' : '折叠' }}
-        </el-radio-button>
-      </el-radio-group>
-      <!-- 菜单 -->
-      <el-menu default-active="" class="el-menu-vertical-demo" :collapse="isCollapse" @open="handleOpen"
-        @close="handleClose" :router="true">
-        <el-menu-item index="/">
-          <el-icon>
-            <Files />
-          </el-icon>
-          <template #title>文件管理</template>
-        </el-menu-item>
-        <el-menu-item index="/history">
-          <el-icon>
-            <Document />
-          </el-icon>
-          <template #title>chrom历史</template>
-        </el-menu-item>
-        <el-menu-item index="/show">
-          <el-icon>
-            <DataAnalysis />
-          </el-icon>
-          <template #title>数据展示</template>
-        </el-menu-item>
-        <el-menu-item index="/login">
-          <el-icon>
-            <setting />
-          </el-icon>
-          <template #title>设置</template>
-        </el-menu-item>
-      </el-menu>
+  <div class="layoutWrapper">
+    <!-- 顶部 Header -->
+    <div class="layoutHeader">
+      <div class="header-title">📊 应用使用统计系统</div>
+      <div class="header-user">欢迎你！</div>
     </div>
-    <!-- 页面内容 -->
-    <div class="contentPage">
-      <router-view></router-view>
+
+    <div class="layoutMain">
+      <!-- 左侧菜单栏 -->
+      <div class="containerLayout">
+        <div class="systemTitle">🛠️ 菜单栏</div>
+
+        <el-radio-group v-model="isCollapse" class="radio-toggle">
+          <el-radio-button :value="false">
+            <i class="el-icon-bottom" style="margin-right: 4px;"></i>
+            {{ isCollapse ? '+' : '展开' }}
+          </el-radio-button>
+          <el-radio-button :value="true">
+            <i class="el-icon-top" style="margin-right: 4px;"></i>
+            {{ isCollapse ? '-' : '折叠' }}
+          </el-radio-button>
+        </el-radio-group>
+
+        <el-menu
+          default-active=""
+          class="el-menu-vertical-demo"
+          :collapse="isCollapse"
+          @open="handleOpen"
+          @close="handleClose"
+          :router="true"
+          background-color="#1f2d3d"
+          text-color="#fff"
+          active-text-color="#ffd04b"
+        >
+          <el-menu-item index="/">
+            <el-icon><Files /></el-icon>
+            <template #title>文件管理</template>
+          </el-menu-item>
+          <el-menu-item index="/history">
+            <el-icon><Document /></el-icon>
+            <template #title>chrom历史</template>
+          </el-menu-item>
+          <el-menu-item index="/show">
+            <el-icon><DataAnalysis /></el-icon>
+            <template #title>数据展示</template>
+          </el-menu-item>
+          <el-menu-item index="/statistic">
+            <el-icon><DataBoard /></el-icon>
+            <template #title>使用统计</template>
+          </el-menu-item>
+          <el-menu-item index="/login">
+            <el-icon><Setting /></el-icon>
+            <template #title>设置</template>
+          </el-menu-item>
+        </el-menu>
+      </div>
+
+      <!-- 页面内容 -->
+      <div class="contentPage">
+        <router-view></router-view>
+      </div>
     </div>
   </div>
-  <!-- <Background /> -->
 </template>
+
 
 <script lang="ts" setup>
 import { ref } from 'vue'
 import {
-  Document, Setting, DataAnalysis, HomeFilled, Files
+  Document, Setting, DataAnalysis, HomeFilled, Files, DataBoard
 } from '@element-plus/icons-vue'
 import Background from './Background.vue';
 
-const isCollapse = ref(true)
+const isCollapse = ref(false)
 const handleOpen = (key: string, keyPath: string[]) => {
   console.log(key, keyPath)
 }
@@ -66,41 +82,53 @@ const handleClose = (key: string, keyPath: string[]) => {
 </script>
 
 <style>
-.layoutTop {
+.layoutWrapper {
   display: flex;
+  flex-direction: column;
+  height: 100vh;
 }
 
-.containerLayout {
+/* 顶部 header 样式 */
+.layoutHeader {
+  height: 60px;
+  background-color: #2c3e50;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10PX 24px;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+/* 主体区域：菜单 + 页面内容 */
+.layoutMain {
+  display: flex;
   flex: 1;
-  justify-content: flex-start;
-  max-width: 10%;
-  padding: 0;
-  margin: 0;
-  z-index: 999;
 }
 
-.contentPage {
-  flex: 10;
-  padding: 1%;
-  max-width: 88%;
-}
-
-.el-menu-vertical-demo {
-  background-color: #42b983;
+/* 左侧菜单栏 */
+.containerLayout {
+  background-color: #1f2d3d;
+  padding: 10px;
+  color: #fff;
 }
 
 .systemTitle {
-  margin: 1%;
-  margin-bottom: 30%;
+  margin-bottom: 20px;
+  color: #ffd04b;
 }
 
-.systemTitle:hover {
-  color: #42b983;
+.el-menu-vertical-demo {
+  border-right: none;
 }
 
-.el-menu {
-  width: 200px;
-  min-height: 100vh;
-  border-right: 1px solid #e6e6e6;
+/* 内容页区域 */
+.contentPage {
+  flex: 1;
+  padding: 24px;
+  background-color: #f5f7fa;
+  overflow-y: auto;
 }
+
 </style>
