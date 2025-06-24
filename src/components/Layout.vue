@@ -129,7 +129,7 @@ const handleClose = (key: string, keyPath: string[]) => {
   display: flex;
   justify-content: center;
   /* 水平居中 */
-  margin: 10px 0;
+  /* margin: 10px 0; */
 }
 
 .collapse-toggle {
