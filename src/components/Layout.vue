@@ -9,48 +9,45 @@
     <div class="layoutMain">
       <!-- 左侧菜单栏 -->
       <div class="containerLayout">
-        <div class="systemTitle">🛠️ 菜单栏</div>
+        <div v-show="!isCollapse" class="systemTitle">🛠️ 菜单栏</div>
 
-        <el-radio-group v-model="isCollapse" class="radio-toggle">
-          <el-radio-button :value="false">
-            <i class="el-icon-bottom" style="margin-right: 4px;"></i>
-            {{ isCollapse ? '+' : '展开' }}
-          </el-radio-button>
-          <el-radio-button :value="true">
-            <i class="el-icon-top" style="margin-right: 4px;"></i>
-            {{ isCollapse ? '-' : '折叠' }}
-          </el-radio-button>
-        </el-radio-group>
+        <div class="collapse-toggle-wrapper">
+          <el-button @click="isCollapse = !isCollapse" class="collapse-toggle">
+            {{ isCollapse ? '+' : '折叠菜单' }}
+          </el-button>
+        </div>
 
-        <el-menu
-          default-active=""
-          class="el-menu-vertical-demo"
-          :collapse="isCollapse"
-          @open="handleOpen"
-          @close="handleClose"
-          :router="true"
-          background-color="#1f2d3d"
-          text-color="#fff"
-          active-text-color="#ffd04b"
-        >
+
+        <el-menu default-active="" class="el-menu-vertical" :collapse="isCollapse" @open="handleOpen"
+          @close="handleClose" :router="true" background-color="#1f2d3d" text-color="#fff" active-text-color="#ffd04b">
           <el-menu-item index="/">
-            <el-icon><Files /></el-icon>
+            <el-icon>
+              <Files />
+            </el-icon>
             <template #title>文件管理</template>
           </el-menu-item>
           <el-menu-item index="/history">
-            <el-icon><Document /></el-icon>
+            <el-icon>
+              <Document />
+            </el-icon>
             <template #title>chrom历史</template>
           </el-menu-item>
           <el-menu-item index="/show">
-            <el-icon><DataAnalysis /></el-icon>
+            <el-icon>
+              <DataAnalysis />
+            </el-icon>
             <template #title>数据展示</template>
           </el-menu-item>
           <el-menu-item index="/statistic">
-            <el-icon><DataBoard /></el-icon>
+            <el-icon>
+              <DataBoard />
+            </el-icon>
             <template #title>使用统计</template>
           </el-menu-item>
           <el-menu-item index="/login">
-            <el-icon><Setting /></el-icon>
+            <el-icon>
+              <Setting />
+            </el-icon>
             <template #title>设置</template>
           </el-menu-item>
         </el-menu>
@@ -117,10 +114,32 @@ const handleClose = (key: string, keyPath: string[]) => {
 .systemTitle {
   margin-bottom: 20px;
   color: #ffd04b;
+  text-align: center;
 }
 
-.el-menu-vertical-demo {
-  border-right: none;
+
+/* 设置更小的折叠菜单宽度，例如 40px */
+.el-menu--collapse {
+  width: 20px !important;
+  min-width: 20px !important;
+}
+
+
+.collapse-toggle-wrapper {
+  display: flex;
+  justify-content: center;
+  /* 水平居中 */
+  margin: 10px 0;
+}
+
+.collapse-toggle {
+  font-size: 14px;
+  color: #fff;
+}
+
+.el-menu-item {
+  padding: 0;
+  position: relative;
 }
 
 /* 内容页区域 */
@@ -130,5 +149,4 @@ const handleClose = (key: string, keyPath: string[]) => {
   background-color: #f5f7fa;
   overflow-y: auto;
 }
-
 </style>
