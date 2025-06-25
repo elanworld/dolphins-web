@@ -30,7 +30,7 @@ const changePage = (n: number) => {
     likeTitle: data.title === '' ? undefined : data.title,
     minVisitTime: data.minDate ? (data.minDate.valueOf() / 1000 + 11644473600) * 1000000 : undefined,
     maxVisitTime: data.maxDate ? (data.maxDate.valueOf() / 1000 + 11644473600) * 1000000 : undefined
-  }, {params: {current: n}}).then(res => {
+  }, {params: {page: n}}).then(res => {
     data.list = res.data.data.records
     data.pageSize = res.data.data.size
     data.current = res.data.data.current
@@ -71,11 +71,14 @@ onMounted(() => {
       </el-header>
       <el-main class="el-main">
         <el-table class="el-table" ref="multipleTable" :data="data.list" :stripe=true :border=true :scroll-x="true" style="width: 100%">
-          <el-table-column prop="title" label="标题"></el-table-column>
-          <el-table-column border:fit prop="webUrl" label="地址"></el-table-column>
+          <el-table-column prop="title" label="标题">
+            <template #default="{ row }" >
+              <a :href="row.webUrl" target="_blank"> {{ row.title }}</a>
+            </template>
+          </el-table-column>
           <el-table-column prop="visitTimeStr" label="日期"></el-table-column>
         </el-table>
-        <el-pagination layout="prev, pager, next" :total="data.total" @current-change="(e:number) => changePage(e)"/>
+        <el-pagination layout="prev, pager, next" :page-size="data.pageSize" :total="data.total" @current-change="(e:number) => changePage(e)"/>
       </el-main>
     </el-container>
   </div>
