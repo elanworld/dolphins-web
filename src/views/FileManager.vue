@@ -14,8 +14,20 @@
 
         <!-- 自定义文件列表 -->
         <el-table :data="fileResList" style="margin-top: 20px;" border size="small">
-            <el-table-column prop="name" label="文件名"></el-table-column>
+            <el-table-column prop="name" label="文件名">
+                <template #default="{ row }">
+                    <a :href="row.url" target="_blank" style="color: #409EFF; text-decoration: none;">
+                        {{ row.name }}
+                    </a>
+                </template>
+            </el-table-column>
+
             <el-table-column prop="date" label="日期"></el-table-column>
+            <el-table-column label="大小" width="100">
+                <template #default="{ row }">
+                    {{ (row.size / 1024).toFixed(1) }} KB
+                </template>
+            </el-table-column>
             <el-table-column label="操作" width="150">
                 <template #default="{ row }">
                     <el-button type="text" size="small" @click="downloadFile(row)">⬇ 下载</el-button>
@@ -23,9 +35,9 @@
                 </template>
             </el-table-column>
         </el-table>
-        <el-pagination v-if="fileResList.length > 0" style="margin-top: 10px; text-align: right;" background layout="prev, pager, next"
-            :total="fileResList.length" :page-size="pageSize" v-model:current-page="currentPage"
-            @current-change="getFileList" />
+        <el-pagination v-if="fileResList.length > 0" style="margin-top: 10px; text-align: right;" background
+            layout="prev, pager, next" :total="fileResList.length" :page-size="pageSize"
+            v-model:current-page="currentPage" @current-change="getFileList" />
         <el-dialog :visible.sync="previewVisible" width="50%" :before-close="closePreview">
             <img v-if="previewImage" :src="previewImage" style="width: 100%" />
             <p v-else>无法预览该文件</p>
@@ -52,12 +64,13 @@ function getFileList() {
         service.get(api.filesRecordUser, {
             params: {
                 page: 20, // 分页参数
-                page: currentPage.value -1,
+                page: currentPage.value - 1,
             }
         },
         ).then(res => {
             fileResList.value = res.data?.data?.records.map(file => ({
                 name: file.fileName,
+                size: file.size,
                 url: file.fileUrl ? file.fileUrl : `${api.fileDown}/${file?.fileName}${file?.password ? "?password=" + file?.password : ""}`,
                 date: file.modifyTime,
                 origin: file,
@@ -84,7 +97,15 @@ function beforeUpload(file) {
 }
 
 // 上传成功后处理
-function handleUploadSuccess(fileName, urlPath) {
+async function handleUploadSuccess(fileName, urlPath) {
+    await service.post(api.filesRecord, null, {
+        params: {
+            fileName: fileName,
+            fileUrl: urlPath,
+        }
+    })
+        .then((response) => {
+        })
     console.log(`上传成功: ${fileName}, 可访问地址: ${urlPath}`)
     ElMessage.success(`文件 ${fileName} 上传成功`)
 }
@@ -120,7 +141,7 @@ async function uploadFile(formData, file, redirect) {
             const redirectResponse = await service.request({
                 url: location,
                 headers: {
-                    Authorization: authorization,
+                    'Authorization': authorization,
                     'File-Path': path
                 },
                 data: formData,
@@ -133,7 +154,7 @@ async function uploadFile(formData, file, redirect) {
             ) {
                 const url = new URL(location)
                 const urlPath = location.replace(url.pathname, '') + '/d/' + path
-                handleUploadSuccess(formData.get('name'), urlPath)
+                await handleUploadSuccess(formData.get('name'), urlPath)
                 return true
             }
             return false
@@ -204,11 +225,11 @@ function closePreview() {
 
 
 function downloadFile(row) {
-  if (!row.url) {
-    ElMessage.warning('该文件暂无链接');
-    return;
-  }
-  window.open(row.url, '_blank');
+    if (!row.url) {
+        ElMessage.warning('该文件暂无链接');
+        return;
+    }
+    window.open(row.url, '_blank');
 }
 
 function removeFile(row) {

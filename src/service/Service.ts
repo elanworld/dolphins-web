@@ -17,7 +17,7 @@ service.interceptors.request.use(config => {
   if (config.params)
     config.params.credentials = 'include'
   let storageSync = window.localStorage.getItem("Authorization");
-  if (storageSync) {
+  if (storageSync && !config.headers.Authorization) {
     config.headers.Authorization = storageSync
   }
   return config

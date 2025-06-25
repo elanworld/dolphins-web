@@ -63,7 +63,7 @@
 
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { onBeforeUnmount, onMounted, ref } from 'vue'
 import {
   Document, Setting, DataAnalysis, HomeFilled, Files, DataBoard
 } from '@element-plus/icons-vue'
@@ -76,6 +76,18 @@ const handleOpen = (key: string, keyPath: string[]) => {
 const handleClose = (key: string, keyPath: string[]) => {
   console.log(key, keyPath)
 }
+function updateCollapseStatus() {
+  isCollapse.value = window.innerWidth < 768  // 你可以根据需要设定临界值
+}
+
+onMounted(() => {
+  updateCollapseStatus()
+  window.addEventListener('resize', updateCollapseStatus)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', updateCollapseStatus)
+})
 </script>
 
 <style>
@@ -107,8 +119,9 @@ const handleClose = (key: string, keyPath: string[]) => {
 /* 左侧菜单栏 */
 .containerLayout {
   background-color: #1f2d3d;
-  padding: 10px;
+  padding: 5px;
   color: #fff;
+  text-align: center;
 }
 
 .systemTitle {
@@ -116,36 +129,37 @@ const handleClose = (key: string, keyPath: string[]) => {
   color: #ffd04b;
   text-align: center;
 }
-
-
-/* 设置更小的折叠菜单宽度，例如 40px */
-.el-menu--collapse {
-  width: 20px !important;
-  min-width: 20px !important;
+/*切换按钮*/
+.el-button, .el-button.is-round {
+  padding: 5px !important;
 }
 
+/* 覆盖 */
+.el-menu { 
+  padding: 0 !important;
+  border-right: none !important;
+}
 
-.collapse-toggle-wrapper {
-  display: flex;
+/* 覆盖 */
+.el-menu-item { 
+  padding: 0 !important;
+}
+
+.el-menu-item .el-menu-tooltip__trigger { 
+  padding: 0 !important;
+  position: relative !important;
   justify-content: center;
-  /* 水平居中 */
-  /* margin: 10px 0; */
 }
 
-.collapse-toggle {
-  font-size: 14px;
-  color: #fff;
-}
 
-.el-menu-item {
-  padding: 0;
-  position: relative;
+.el-menu--collapse {
+  width: 100% !important;
 }
 
 /* 内容页区域 */
 .contentPage {
   flex: 1;
-  padding: 24px;
+  padding: 10px;
   background-color: #f5f7fa;
   overflow-y: auto;
 }
