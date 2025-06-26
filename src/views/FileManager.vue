@@ -152,8 +152,7 @@ async function uploadFile(formData, file, redirect) {
                 redirectResponse.status === 200 &&
                 redirectResponse.data?.code === 200
             ) {
-                const url = new URL(location)
-                const urlPath = location.replace(url.pathname, '') + '/d/' + path
+                const urlPath = location.split("/api/")[0] + '/d/' + path
                 await handleUploadSuccess(formData.get('name'), urlPath)
                 return true
             }
