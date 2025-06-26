@@ -17,7 +17,7 @@
         {
           type: 'pie',
           radius: '70%',
-          data: props.data.map(i => ({ name: i.device, value: i.count }))
+          data: props.data.map(i => ({ name: i.tag, value: i.count }))
         }
       ]
     })

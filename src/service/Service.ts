@@ -9,6 +9,7 @@
 import axios from "axios";
 import { ElMessage } from "element-plus";
 import { useRouter } from 'vue-router';
+import api from "./Api.vue";
 
 const service = axios.create()
 const router = useRouter();
@@ -19,6 +20,9 @@ service.interceptors.request.use(config => {
   let storageSync = window.localStorage.getItem("Authorization");
   if (storageSync && !config.headers.Authorization) {
     config.headers.Authorization = storageSync
+  }
+  if(config?.url && !config?.url?.startsWith("http")) {
+    config.url = api.preLink + config.url
   }
   return config
 }, err => {
