@@ -40,17 +40,16 @@
                 <el-table-column label="类型">
                     <template #default="{ row }">
                         <el-select v-model="row.type" filterable allow-create placeholder="请输入或选择"
-                            @change="() => row.modified = true">
+                            @change="() => {
+                                row.modified = true
+                                submitChanges()
+                            }">
                             <el-option v-for="t in allTypes" :key="t" :label="t" :value="t" />
                         </el-select>
                     </template>
                 </el-table-column>
             </el-table>
         </el-card>
-
-        <el-button type="success" @click="submitChanges" :disabled="usageTable.length === 0">
-            保存修改
-        </el-button>
     </div>
 </template>
 
@@ -101,6 +100,7 @@ const submitChanges = async () => {
     }
 
     await service.post('/app-record/update-types', toUpdate)
+    toUpdate.forEach(value => value.modified = undefined)
     ElMessage.success('保存成功')
 }
 
@@ -166,6 +166,7 @@ async function fetchData() {
         ElMessage.error('加载失败' + e)
     }
 }
+onMounted(() => fetchData())
 </script>
 
 <style scoped>
@@ -184,10 +185,6 @@ h3 {
     padding-bottom: 8px;
 }
 
-.search-bar .el-date-picker,
-.search-bar .el-select {
-    min-width: 240px;
-}
 
 .search-bar .el-button {
     flex-shrink: 0;
