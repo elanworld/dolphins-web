@@ -74,7 +74,6 @@ const chartData = ref([])
 const deviceData = ref([])
 const typeData = ref([])
 
-const records = ref([])
 const allTypes = ref([])
 const searchType = ref()
 
@@ -100,7 +99,18 @@ const submitChanges = async () => {
     }
 
     await service.post('/app-record/update-types', toUpdate)
-    toUpdate.forEach(value => value.modified = undefined)
+    toUpdate.forEach(value => {
+        value.modified = undefined
+        let found = false;
+        allTypes.value.forEach(v =>{
+            if(v === value.type) {
+                found = true
+            }
+        })
+        if(!found) {
+            allTypes.value.push(value.type)
+        }
+    })
     ElMessage.success('保存成功')
 }
 
