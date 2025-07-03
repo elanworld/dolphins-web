@@ -39,13 +39,10 @@
 
                 <el-table-column label="类型">
                     <template #default="{ row }">
-                        <el-select v-model="row.type" filterable allow-create placeholder="请输入或选择"
-                            @change="() => {
-                                row.modified = true
-                                submitChanges()
-                            }">
-                            <el-option v-for="t in allTypes" :key="t" :label="t" :value="t" />
-                        </el-select>
+                        <LongPressSelect v-model="row.type" :options="allTypes" @change="() => {
+                            row.modified = true
+                            submitChanges()
+                        }" />
                     </template>
                 </el-table-column>
             </el-table>
@@ -60,10 +57,11 @@ import AppUsageChart from '@/components/AppUsageChart.vue';
 import AppDevicePieChart from '@/components/AppDevicePieChart.vue'
 import Api from '../service/Api.vue'
 import { service } from '@/service/Service';
+import LongPressSelect from '@/components/LongPressSelect.vue'
 
 const today = new Date()
 const sevenDaysAgo = new Date()
-sevenDaysAgo.setDate(today.getDate() - 6)
+sevenDaysAgo.setDate(today.getDate() - 3)
 
 const dateRange = ref([sevenDaysAgo, today])
 
@@ -78,16 +76,11 @@ const allTypes = ref([])
 const searchType = ref()
 
 
-onMounted(() => {
-    const [startDate, endDate] = dateRange.value || []
-    fetchAppUsageStats({ startDate, endDate })
-    fetchTypes()
-})
 
 // 2. 获取所有可选 type
 const fetchTypes = async () => {
     const res = await service.get('/app-record/types')
-    allTypes.value = res.data || []
+    allTypes.value = res.data?.data || []
 }
 
 // 3. 提交修改
@@ -102,12 +95,12 @@ const submitChanges = async () => {
     toUpdate.forEach(value => {
         value.modified = undefined
         let found = false;
-        allTypes.value.forEach(v =>{
-            if(v === value.type) {
+        allTypes.value.forEach(v => {
+            if (v === value.type) {
                 found = true
             }
         })
-        if(!found) {
+        if (!found) {
             allTypes.value.push(value.type)
         }
     })
@@ -176,7 +169,11 @@ async function fetchData() {
         ElMessage.error('加载失败' + e)
     }
 }
-onMounted(() => fetchData())
+onMounted(() => {
+    const [startDate, endDate] = dateRange.value || []
+    fetchTypes()
+    fetchData()
+})
 </script>
 
 <style scoped>
