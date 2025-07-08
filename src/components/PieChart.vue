@@ -3,7 +3,7 @@
   </template>
   
   <script setup>
-  import { onMounted, watch, ref } from 'vue'
+  import { onMounted, watch, ref, onBeforeUnmount } from "vue";
   import * as echarts from 'echarts'
   
   const props = defineProps({ data: Array })
@@ -17,13 +17,18 @@
         {
           type: 'pie',
           radius: '70%',
-          data: props.data.map(i => ({ name: i.tag, value: i.count }))
+          data: props.data.map(i => ({ name: i.tag, value: i.value }))
         }
       ]
     })
   }
-  
-  onMounted(renderChart)
+
   watch(() => props.data, renderChart)
+  onMounted(renderChart)
+  onBeforeUnmount(() =>{
+    if (this.chart) {
+      this.chart.dispose(); // 销毁 ECharts 实例
+    }
+  })
   </script>
   

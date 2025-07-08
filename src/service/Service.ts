@@ -17,7 +17,7 @@ const router = useRouter();
 service.interceptors.request.use(config => {
   if (config.params)
     config.params.credentials = 'include'
-  let storageSync = window.localStorage.getItem("Authorization");
+  const storageSync = window.localStorage.getItem("Authorization");
   if (storageSync && !config.headers.Authorization) {
     config.headers.Authorization = storageSync
   }
@@ -33,24 +33,21 @@ service.interceptors.request.use(config => {
 service.interceptors.response.use(res => {
   if (res.status === 200) {
     if (res?.headers?.Authorization) {
-      window.localStorage.setItem("Authorization", res.header.Authorization)
+      window.localStorage.setItem("Authorization", res?.headers.Authorization)
     }
   }
   if (res.status === 203) {
-    // window.location.replace("/")
-    // window.location.reload()
     ElMessage('请登录再访问！')
-      router.push('/');
+    window.location.href = ("/dolphins-web/login")
+    setStorage("Authorization", "")
     return Promise.reject('请登录再访问！')
-  }
-  if (res.status === 403) {
-    // window.location.replace("/")
-    // window.location.reload()
-    ElMessage('您没有权限访问！')
-    return Promise.reject('您没有权限访问！')
   }
   return res
 }, err => {
+  if (err.response.status === 403) {
+    ElMessage('您没有权限访问！')
+    return Promise.reject('您没有权限访问！')
+  }
   return Promise.reject(err)  //返回错误
 })
 

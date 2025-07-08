@@ -15,17 +15,17 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <el-card>
                     <h3 class="text-lg font-semibold mb-2">使用时长排行（前5）</h3>
-                    <AppUsageChart :data="chartData" />
+                    <CategoryChart :data="chartData" />
                 </el-card>
 
                 <el-card>
                     <h3 class="text-lg font-semibold mb-2">类型占比</h3>
-                    <AppDevicePieChart :data="typeData" />
+                    <PieChart :data="typeData" />
                 </el-card>
 
                 <el-card>
                     <h3 class="text-lg font-semibold mb-2">设备占比</h3>
-                    <AppDevicePieChart :data="deviceData" />
+                    <PieChart :data="deviceData" />
                 </el-card>
             </div>
 
@@ -53,8 +53,8 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import { ElMessage } from 'element-plus'
-import AppUsageChart from '@/components/AppUsageChart.vue';
-import AppDevicePieChart from '@/components/AppDevicePieChart.vue'
+import CategoryChart from '@/components/CategoryChart.vue';
+import PieChart from '@/components/PieChart.vue'
 import Api from '../service/Api.vue'
 import { service } from '@/service/Service';
 import LongPressSelect from '@/components/LongPressSelect.vue'
@@ -74,6 +74,7 @@ const typeData = ref([])
 
 const allTypes = ref([])
 const searchType = ref()
+const lastInterval = ref()
 
 
 
@@ -124,34 +125,57 @@ function fetchAppUsageStats({ startDate, endDate }) {
         params: { minTime: formatDate(startDate), maxTime: formatDate(endDate), type: searchType.value }
     }).then(res => res.data?.data)
 }
+async function addDataGradually(res) {
+  if (lastInterval.value) {
+    clearInterval(lastInterval.value)
+  }
+  usageTable.value = []
+  let index = 0;
+  // 每  秒添加一个新的数据项
+  const interval = setInterval(() => {
+    if (index < res.length) {
+      usageTable.value.push(res[index]);
+      index++;
+    } else {
+      clearInterval(interval); // 停止定时器
+      clearInterval(lastInterval.value)
+    }
+  }, 10);  // 每秒添加一条数据
+  lastInterval.value = interval
+}
+
 
 async function fetchData() {
     try {
         const [startDate, endDate] = dateRange.value || []
         const res = await fetchAppUsageStats({ startDate, endDate })
-        usageTable.value = res
+
+        addDataGradually(res);
 
         // chartData: 每个 app_name 的总 duration
         chartData.value = res
             .reduce((map, item) => {
-                const existing = map.find(i => i.appName === item.appName)
+                if (!item.appName) {
+                  return map
+                }
+                const existing = map.find(i => i.tag == item.appName)
                 if (existing) {
-                    existing.duration += (item.duration / 60)
+                    existing.value += (item.duration / 60)
                 } else {
-                    map.push({ appName: item.appName, duration: (item.duration / 60) })
+                    map.push({ tag: item.appName, value: (item.duration / 60) })
                 }
                 return map
             }, [])
-            .sort((a, b) => b.duration - a.duration) // 排序：使用时间从大到小
+            .sort((a, b) => b.value - a.value) // 排序：使用时间从大到小
             .slice(0, 5) // 只保留前 5 项
 
         // deviceData: 每个 device 出现次数（用于饼图）
         deviceData.value = res.reduce((map, item) => {
             const existing = map.find(i => i.tag === item.device)
             if (existing) {
-                existing.count += 1
+                existing.value += 1
             } else {
-                map.push({ tag: item.device, count: 1 })
+                map.push({ tag: item.device, value: 1 })
             }
             return map
         }, [])
@@ -159,18 +183,17 @@ async function fetchData() {
         typeData.value = res.reduce((map, item) => {
             const existing = map.find(i => i.tag === item.type)
             if (existing) {
-                existing.count += item.duration
+                existing.value += item.duration
             } else {
-                map.push({ tag: item.type, count: item.duration })
+                map.push({ tag: item.type, value: item.duration })
             }
             return map
         }, [])
     } catch (e) {
-        ElMessage.error('加载失败' + e)
+        ElMessage.error('加载失败: ' + e)
     }
 }
 onMounted(() => {
-    const [startDate, endDate] = dateRange.value || []
     fetchTypes()
     fetchData()
 })
