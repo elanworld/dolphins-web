@@ -46,17 +46,18 @@
       </div>
 
       <el-table :data="usageTable" class="my-4" style="width: 100%">
-        <el-table-column prop="appName" label="程序名" />
-        <el-table-column prop="packagename" label="包名" />
-        <el-table-column prop="duration" label="使用时长（秒）" />
-        <el-table-column prop="device" label="设备" />
         <el-table-column prop="date" label="时间" :formatter="formatUnixDate" />
+        <el-table-column prop="device" label="设备" />
+        <el-table-column prop="packagename" label="包名" />
+        <el-table-column prop="appName" label="程序名" />
+        <el-table-column prop="duration" label="使用时长（秒）" />
 
         <el-table-column label="类型">
           <template #default="{ row }">
             <LongPressSelect
               v-model="row.type"
               :options="allTypes"
+              @click="(e) => gussType(row, e)"
               @change="
                 () => {
                   row.modified = true;
@@ -104,6 +105,23 @@ const lastInterval = ref()
 const fetchTypes = async () => {
     const res = await service.get('/app-record/types')
     allTypes.value = res.data?.data || []
+}
+const gussType = async (row, ele) => {
+    const res = await service.post('/appRecordExt/getGussTypes',row )
+    let value = Object.entries(res.data?.data)
+      .sort((a, b) => b[1] -a[1]).map(item => item[0]) || [];
+    allTypes.value.forEach(v => {
+      let found = false;
+      value.forEach(v1 => {
+        if (v === v1) {
+          found = true
+        }
+      })
+      if (!found) {
+        value.push(v)
+      }
+    })
+    allTypes.value = value
 }
 
 // 3. 提交修改
@@ -271,7 +289,7 @@ async function fetchData() {
             }
             return map
         }, [])
-          .map(item => {return {tag: item.tag, value: (item.value / 60).toFixed(0)}})
+          .map(item => {return {tag: item.tag, value: item.value}})
         // typeData: 每个 type 出现次数（用于饼图）
         typeData.value = res.reduce((map, item) => {
             if (!item.appName) {
