@@ -50,7 +50,7 @@
         <el-table-column prop="device" label="设备" />
         <el-table-column prop="packagename" label="包名" />
         <el-table-column prop="appName" label="程序名" />
-        <el-table-column prop="duration" label="使用时长（秒）" />
+        <el-table-column prop="actionDuration" label="使用时长（秒）" />
 
         <el-table-column label="类型">
           <template #default="{ row }">
@@ -83,7 +83,7 @@ import LongPressSelect from '@/components/LongPressSelect.vue'
 
 const today = new Date()
 const sevenDaysAgo = new Date()
-sevenDaysAgo.setDate(today.getDate() - 3)
+sevenDaysAgo.setDate(today.getDate() - 7)
 
 const dateRange = ref([sevenDaysAgo, today])
 
@@ -122,6 +122,7 @@ const gussType = async (row, ele) => {
       }
     })
     allTypes.value = value
+    ElMessage.success("类型猜测完成")
 }
 
 // 3. 提交修改
@@ -175,9 +176,9 @@ async function addDataGradually(res) {
   let index = 0;
   // 每  秒添加一个新的数据项
   const interval = setInterval(() => {
-    if (index < res.length - 10) {
-      usageTable.value.push(...res.splice(index, index + 10));
-      index+=10;
+    if (index < res.length - 0) {
+      usageTable.value.push(...res.splice(index, index + 1));
+      index+=1;
     } else {
       usageTable.value.push(...res.splice(index, res.length - 1));
       clearInterval(interval); // 停止定时器
@@ -195,7 +196,7 @@ async function fetchData() {
 
         addDataGradually(res);
 
-        // chartTimeData: 每个 app_name 的总 duration
+        // chartTimeData: 每个 app_name 的总 actionDuration
         chartTopData.value = res
             .reduce((map, item) => {
                 if (!item.appName) {
@@ -203,13 +204,14 @@ async function fetchData() {
                 }
                 const existing = map.find(i => i.tag == item.appName)
                 if (existing) {
-                    existing.value += (item.duration / 60)
+                    existing.value += item.actionDuration
                 } else {
-                    map.push({ tag: item.appName, value: (item.duration / 60) })
+                    map.push({ tag: item.appName, value: item.actionDuration })
                 }
                 return map
             }, [])
             .sort((a, b) => b.value - a.value) // 排序：使用时间从大到小
+            .map(item => {return {tag: item.tag, value: (item.value / 60).toFixed(0)}})
             .slice(0, 5) // 只保留前 5 项
 
       // 处理数据，按小时聚合每个应用的使用时长
@@ -219,7 +221,7 @@ async function fetchData() {
           return {
             tag: new Date(item.date * 1000), // new Date(hour.getFullYear(), hour.getMonth(), hour.getDate(), hour.getHours(), 0, 0, 0),
             appName: item.appName,
-            duration: item.duration, // 转换为分钟
+            actionDuration: item.actionDuration, // 转换为分钟
           };
         })
         .reduce((acc, item) => {
@@ -228,7 +230,7 @@ async function fetchData() {
           }
 
           const startTime = new Date(item.tag);  // 起始时间
-          let remainingDuration = item.duration; // 剩余时长（秒）
+          let remainingDuration = item.actionDuration; // 剩余时长（秒）
           let currentTime = new Date(startTime); // 当前时间（从起始时间开始）
 
 
@@ -297,9 +299,9 @@ async function fetchData() {
             }
             const existing = map.find(i => i.tag === item.type)
             if (existing) {
-                existing.value += item.duration
+                existing.value += item.actionDuration
             } else {
-                map.push({ tag: item.type, value: item.duration })
+                map.push({ tag: item.type, value: item.actionDuration })
             }
             return map
         }, [])

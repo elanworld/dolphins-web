@@ -21,6 +21,10 @@ function renderChart() {
     },
     xAxis: {
       type: xAxisTimeType.value ? "time" : "category",
+      axisLabel: {
+        interval: 0, // 强制显示所有标签
+        rotate: 30,  // 可选：旋转一定角度，防止重叠
+      },
     },
     yAxis: { type: "value" },
     series: [
@@ -31,9 +35,6 @@ function renderChart() {
     ],
     toolbox: {
       feature: {
-        dataZoom: {
-          yAxisIndex: "none",
-        },
         restore: {},
         saveAsImage: {},
       },

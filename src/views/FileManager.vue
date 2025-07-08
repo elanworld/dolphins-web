@@ -1,12 +1,20 @@
 <template>
     <div style="margin: auto; padding: 20px;">
         <!-- <h2>📁 Element Plus 文件管理器示例</h2> -->
-
+    <div style="display: flex">
+      <el-switch
+        v-model="redirect"
+        class="ml-2"
+        inline-prompt
+        style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949; padding: 0 10px"
+        active-text="快速上传"
+        inactive-text="快速上传"
+      />
         <el-upload ref="uploadRef" multiple :file-list="fileList" :on-remove="handleRemove" :on-preview="handlePreview"
             :before-upload="beforeUpload" :http-request="dummyRequest" list-type="text" accept="*">
             <el-button type="primary" size="small">选择文件上传</el-button>
         </el-upload>
-
+    </div>
         <!-- 图片预览弹窗 -->
         <el-dialog :visible.sync="previewVisible" width="50%" :before-close="closePreview">
             <img :src="previewImage" alt="预览图片" style="width: 100%" />
@@ -50,6 +58,7 @@ import { ref, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { service, setStorage, getStorage } from "@/service/Service";
 import api from "@/service/Api.vue";
+import { useLocalStorage } from "@/service/Util";
 const currentPage = ref(1)
 const pageSize = ref(0)
 const fileList = ref([])
@@ -58,6 +67,7 @@ const fileResList = ref([])
 // 图片预览状态
 const previewVisible = ref(false)
 const previewImage = ref('')
+const redirect = useLocalStorage("redirect",true)
 
 function getFileList() {
     try {
@@ -83,9 +93,6 @@ function getFileList() {
     }
 }
 
-onMounted(async () => {
-    getFileList()
-})
 // 上传前校验（可扩展）
 function beforeUpload(file) {
     // 例如限制文件大小 <= 5MB
@@ -175,8 +182,8 @@ async function dummyRequest({ file, onSuccess }) {
             formData.append('name', file.name)
             // formData.append('password', password.value)
 
-            let success = await uploadFile(formData, file, 1)
-            if (!success) {
+            let success = await uploadFile(formData, file, redirect.value ? 1 : 0)
+            if (!success && redirect.value) {
                 success = await uploadFile(formData, file, 0)
             }
 
@@ -240,4 +247,7 @@ function removeFile(row) {
     })
 }
 
+onMounted(async () => {
+  getFileList()
+})
 </script>
