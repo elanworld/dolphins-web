@@ -25,10 +25,5 @@
 
   watch(() => props.data, renderChart)
   onMounted(renderChart)
-  onBeforeUnmount(() =>{
-    if (this.chart) {
-      this.chart.dispose(); // 销毁 ECharts 实例
-    }
-  })
   </script>
   

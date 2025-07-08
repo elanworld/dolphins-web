@@ -4,7 +4,7 @@ class Api {
   }
   
 
-  mockPro = true
+  mockPro = false
   preLink = process.env.NODE_ENV !== "development" || this.mockPro ? "https://www.xianneng.top/api/launcher-box" : "http://localhost:8030"
   historyPage = this.preLink + "/chromeHistoryExt/page"
   scheduleTask = this.preLink + "/scheduleTaskExt/list"

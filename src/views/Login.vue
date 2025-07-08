@@ -90,6 +90,11 @@ const onClickLogin = () => {
     },
   })
     .then((response) => {
+      if (response.status === 403) {
+        console.error(response);
+        alert("登录失败");
+        return
+      }
       const auth =
         response.headers.get("Authorization") ||
         response.headers.get("authorization");

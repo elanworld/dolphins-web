@@ -1,53 +1,74 @@
 <template>
-    <div class="p-4">
+  <div class="p-4">
+    <el-card>
+      <h2>应用使用统计</h2>
+
+      <div class="search-bar">
+        <el-date-picker
+          v-model="dateRange"
+          type="daterange"
+          range-separator="至"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+          class="mb-4"
+        />
+        <el-select
+          class="el-select-type"
+          v-model="searchType"
+          filterable
+          allow-create
+          placeholder="请输入或选择"
+        >
+          <el-option v-for="t in allTypes" :key="t" :label="t" :value="t" />
+        </el-select>
+        <el-button type="primary" @click="fetchData">刷新数据</el-button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <el-card>
-            <h2>应用使用统计</h2>
-
-            <div class="search-bar">
-                <el-date-picker v-model="dateRange" type="daterange" range-separator="至" start-placeholder="开始日期"
-                    end-placeholder="结束日期" class="mb-4" />
-                <el-select class="el-select-type" v-model="searchType" filterable allow-create placeholder="请输入或选择">
-                    <el-option v-for="t in allTypes" :key="t" :label="t" :value="t" />
-                </el-select>
-                <el-button type="primary" @click="fetchData">刷新数据</el-button>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <el-card>
-                    <h3 class="text-lg font-semibold mb-2">使用时长排行（前5）</h3>
-                    <CategoryChart :data="chartData" />
-                </el-card>
-
-                <el-card>
-                    <h3 class="text-lg font-semibold mb-2">类型占比</h3>
-                    <PieChart :data="typeData" />
-                </el-card>
-
-                <el-card>
-                    <h3 class="text-lg font-semibold mb-2">设备占比</h3>
-                    <PieChart :data="deviceData" />
-                </el-card>
-            </div>
-
-
-            <el-table :data="usageTable" class="my-4" style="width: 100%">
-                <el-table-column prop="appName" label="程序名" />
-                <el-table-column prop="packagename" label="包名" />
-                <el-table-column prop="duration" label="使用时长（秒）" />
-                <el-table-column prop="device" label="设备" />
-                <el-table-column prop="date" label="时间" :formatter="formatUnixDate" />
-
-                <el-table-column label="类型">
-                    <template #default="{ row }">
-                        <LongPressSelect v-model="row.type" :options="allTypes" @change="() => {
-                            row.modified = true
-                            submitChanges()
-                        }" />
-                    </template>
-                </el-table-column>
-            </el-table>
+          <h3 class="text-lg font-semibold mb-2">每小时使用率</h3>
+          <CategoryChart :data="chartTimeData" />
         </el-card>
-    </div>
+        <el-card>
+          <h3 class="text-lg font-semibold mb-2">使用时长排行（前5）</h3>
+          <CategoryChart :data="chartTopData" />
+        </el-card>
+
+        <el-card>
+          <h3 class="text-lg font-semibold mb-2">类型占比</h3>
+          <PieChart :data="typeData" />
+        </el-card>
+
+        <el-card>
+          <h3 class="text-lg font-semibold mb-2">设备占比</h3>
+          <PieChart :data="deviceData" />
+        </el-card>
+      </div>
+
+      <el-table :data="usageTable" class="my-4" style="width: 100%">
+        <el-table-column prop="appName" label="程序名" />
+        <el-table-column prop="packagename" label="包名" />
+        <el-table-column prop="duration" label="使用时长（秒）" />
+        <el-table-column prop="device" label="设备" />
+        <el-table-column prop="date" label="时间" :formatter="formatUnixDate" />
+
+        <el-table-column label="类型">
+          <template #default="{ row }">
+            <LongPressSelect
+              v-model="row.type"
+              :options="allTypes"
+              @change="
+                () => {
+                  row.modified = true;
+                  submitChanges();
+                }
+              "
+            />
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-card>
+  </div>
 </template>
 
 <script setup>
@@ -67,7 +88,8 @@ const dateRange = ref([sevenDaysAgo, today])
 
 const usageTable = ref([])
 
-const chartData = ref([])
+const chartTopData = ref([])
+const chartTimeData = ref([])
 
 const deviceData = ref([])
 const typeData = ref([])
@@ -130,13 +152,16 @@ async function addDataGradually(res) {
     clearInterval(lastInterval.value)
   }
   usageTable.value = []
+  let a= [  ]
+  a.splice()
   let index = 0;
   // 每  秒添加一个新的数据项
   const interval = setInterval(() => {
-    if (index < res.length) {
-      usageTable.value.push(res[index]);
-      index++;
+    if (index < res.length - 10) {
+      usageTable.value.push(...res.splice(index, index + 10));
+      index+=10;
     } else {
+      usageTable.value.push(...res.splice(index, res.length - 1));
       clearInterval(interval); // 停止定时器
       clearInterval(lastInterval.value)
     }
@@ -152,8 +177,8 @@ async function fetchData() {
 
         addDataGradually(res);
 
-        // chartData: 每个 app_name 的总 duration
-        chartData.value = res
+        // chartTimeData: 每个 app_name 的总 duration
+        chartTopData.value = res
             .reduce((map, item) => {
                 if (!item.appName) {
                   return map
@@ -169,8 +194,75 @@ async function fetchData() {
             .sort((a, b) => b.value - a.value) // 排序：使用时间从大到小
             .slice(0, 5) // 只保留前 5 项
 
+      // 处理数据，按小时聚合每个应用的使用时长
+      chartTimeData.value = res
+        .map(item => {
+          // 返回新的对象，包含时间和应用的时长
+          return {
+            tag: new Date(item.date * 1000), // new Date(hour.getFullYear(), hour.getMonth(), hour.getDate(), hour.getHours(), 0, 0, 0),
+            appName: item.appName,
+            duration: item.duration, // 转换为分钟
+          };
+        })
+        .reduce((acc, item) => {
+          if (!item.appName) {
+            return acc;
+          }
+
+          const startTime = new Date(item.tag);  // 起始时间
+          let remainingDuration = item.duration; // 剩余时长（秒）
+          let currentTime = new Date(startTime); // 当前时间（从起始时间开始）
+
+
+          while (remainingDuration > 0) {
+            // 获取当前小时的结束时间
+            const nextHour = new Date(currentTime);
+            nextHour.setHours(currentTime.getHours() + 1, 0, 0, 0); // 设置为下一个小时的起始时间
+
+            // 当前小时的时长
+            const hourDuration = (nextHour - currentTime) / 1000; // 当前小时的时长（秒）
+
+            if (remainingDuration <= hourDuration) {
+              // 调整为整点时间
+              currentTime.setMinutes(0, 0, 0);  // 将时间调整到整点（小时）
+              // 如果剩余时长小于当前小时的时长，则直接加到当前小时
+              const existing = acc.find(i => i.tag.valueOf() === currentTime.valueOf());
+              if (existing) {
+                existing.value += remainingDuration;
+              } else {
+                acc.push({ tag: currentTime, value: remainingDuration });
+              }
+              remainingDuration = 0;
+            } else {
+              // 调整为整点时间
+              currentTime.setMinutes(0, 0, 0);  // 将时间调整到整点（小时）
+              // 否则，填满当前小时，并将剩余时长传递到下一个小时
+              const existing = acc.find(i => i.tag.valueOf() === currentTime.valueOf());
+              if (existing) {
+                existing.value += hourDuration;
+              } else {
+                acc.push({ tag: currentTime, value: hourDuration });
+              }
+              remainingDuration -= hourDuration;  // 减去当前小时的时长
+              currentTime = new Date(nextHour);  // 跳到下一个整点时间
+            }
+          }
+          return acc;
+        }, [])
+        .map((item => {
+          return {
+            tag: item.tag, value: (item.value / 60).toFixed(0) // 分
+          }}))
+        .sort((a, b) => {
+          // 按时间排序
+          return a.tag.valueOf() - b.tag.valueOf();
+        });
+
         // deviceData: 每个 device 出现次数（用于饼图）
         deviceData.value = res.reduce((map, item) => {
+            if (!item.appName) {
+              return map;
+            }
             const existing = map.find(i => i.tag === item.device)
             if (existing) {
                 existing.value += 1
@@ -179,8 +271,12 @@ async function fetchData() {
             }
             return map
         }, [])
+          .map(item => {return {tag: item.tag, value: (item.value / 60).toFixed(0)}})
         // typeData: 每个 type 出现次数（用于饼图）
         typeData.value = res.reduce((map, item) => {
+            if (!item.appName) {
+              return map;
+            }
             const existing = map.find(i => i.tag === item.type)
             if (existing) {
                 existing.value += item.duration
@@ -189,6 +285,7 @@ async function fetchData() {
             }
             return map
         }, [])
+          .map(item => {return {tag: item.tag, value: (item.value / 60).toFixed(0)}})
     } catch (e) {
         ElMessage.error('加载失败: ' + e)
     }
@@ -202,25 +299,24 @@ onMounted(() => {
 <style scoped>
 h2,
 h3 {
-    margin-bottom: 12px;
+  margin-bottom: 12px;
 }
 
 .search-bar {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 12px;
-    white-space: nowrap;
-    overflow-x: auto;
-    padding-bottom: 8px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  white-space: nowrap;
+  overflow-x: auto;
+  padding-bottom: 8px;
 }
 
-
 .search-bar .el-button {
-    flex-shrink: 0;
+  flex-shrink: 0;
 }
 
 .el-select-type {
-    width: 20%;
+  width: 20%;
 }
 </style>
