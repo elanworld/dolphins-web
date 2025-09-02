@@ -84,8 +84,8 @@ function getFileList() {
                 url: file.fileUrl ? file.fileUrl : `${api.fileDown}/${file?.fileName}${file?.password ? "?password=" + file?.password : ""}`,
                 date: file.modifyTime,
                 origin: file,
-            }))
-            pageSize.value = fileResList.length
+            })) || []
+            pageSize.value = fileResList.value?.length || 20
         })
         return true
     } catch (error) {
