@@ -43,8 +43,8 @@
                 </template>
             </el-table-column>
         </el-table>
-        <el-pagination v-if="fileResList.length > 0" style="margin-top: 10px; text-align: right;" background
-            layout="prev, pager, next" :total="fileResList.length" :page-size="pageSize"
+        <el-pagination style="margin-top: 10px; text-align: right;" background
+            layout="prev, pager, next" :total="totalSize" :page-size="pageSize"
             v-model:current-page="currentPage" @current-change="getFileList" />
         <el-dialog :visible.sync="previewVisible" width="50%" :before-close="closePreview">
             <img v-if="previewImage" :src="previewImage" style="width: 100%" />
@@ -61,6 +61,7 @@ import api from "@/service/Api.vue";
 import { useLocalStorage } from "@/service/Util";
 const currentPage = ref(1)
 const pageSize = ref(0)
+const totalSize = ref(0)
 const fileList = ref([])
 const fileResList = ref([])
 
@@ -86,6 +87,7 @@ function getFileList() {
                 origin: file,
             })) || []
             pageSize.value = fileResList.value?.length || 20
+            totalSize.value = res.data?.data?.total
         })
         return true
     } catch (error) {
