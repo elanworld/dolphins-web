@@ -75,7 +75,7 @@ function getFileList() {
         service.get(api.filesRecordUser, {
             params: {
                 page: 20, // 分页参数
-                page: currentPage.value - 1,
+                current: currentPage.value - 1,
             }
         },
         ).then(res => {
